@@ -1,100 +1,118 @@
-import { useState } from 'react';
-import { Textarea, Button, Card } from '../ui';
-import styles from './AnalysisForm.module.css';
+import { useState, FormEvent } from 'react'
 
-export function AnalysisForm({ onSubmit, isLoading }) {
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [error, setError] = useState('');
+interface Props {
+  onSubmit: (text: string, title: string) => Promise<void>
+  isLoading: boolean
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+export function AnalysisForm({ onSubmit, isLoading }: Props) {
+  const [title, setTitle] = useState('')
+  const [text, setText] = useState('')
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
 
     if (!text.trim()) {
-      setError('Please enter some text to analyze');
-      return;
+      setError('Please enter some text to analyze')
+      return
     }
 
     if (text.length < 10) {
-      setError('Text must be at least 10 characters');
-      return;
+      setError('Text must be at least 10 characters')
+      return
     }
 
-    await onSubmit(text, title);
-  };
+    if (text.length > 20000) {
+      setError('Text must be less than 20,000 characters')
+      return
+    }
+
+    await onSubmit(text, title)
+  }
 
   return (
-    <Card className={styles.formCard} padding="large">
+    <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/50">
       <form onSubmit={handleSubmit}>
-        <div className={styles.header}>
-          <div className={styles.iconWrapper}>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10 9 9 9 8 9" />
+        {/* Header */}
+        <div className="flex items-start gap-4 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-primary to-accent-cyan flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <div>
-            <h2 className={styles.title}>Analyze Content</h2>
-            <p className={styles.subtitle}>
-              Enter news text to detect potential misinformation
-            </p>
+            <h2 className="font-display font-semibold text-xl text-text-primary">Analyze Content</h2>
+            <p className="text-sm text-text-muted">Enter news text to detect potential misinformation</p>
           </div>
         </div>
 
-        <div className={styles.fields}>
-          <Textarea
-            label="Article Title (optional)"
-            placeholder="Enter the headline or title of the article..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            rows={2}
-          />
+        {/* Fields */}
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-2">
+              Article Title <span className="text-text-muted">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter the headline or title..."
+              className="input-field"
+            />
+          </div>
 
-          <div className={styles.textareaWrapper}>
-            <Textarea
-              label="Article Content"
-              placeholder="Paste the full article text or news content you want to analyze for authenticity..."
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-2">
+              Article Content <span className="text-rose-400">*</span>
+            </label>
+            <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              rows={8}
-              error={error}
+              placeholder="Paste the full article text you want to analyze for authenticity..."
+              rows={7}
+              className="input-field resize-none"
             />
-            <span className={styles.charCount}>
-              {text.length} characters
-            </span>
+            <div className="flex justify-between mt-2">
+              <span className={`text-xs ${error ? 'text-rose-400' : 'text-text-muted'}`}>
+                {error || `${text.length} characters`}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Button
-            type="submit"
-            variant="primary"
-            size="large"
-            fullWidth
-            isLoading={isLoading}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Analyzing...' : 'Analyze for Fake News'}
-          </Button>
-        </div>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full mt-6 btn-primary flex items-center justify-center gap-2 h-12 text-base"
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Analyze for Fake News
+            </>
+          )}
+        </button>
 
-        <p className={styles.disclaimer}>
-          Powered by an ensemble of 7 AI models with weighted voting
+        {/* Footer Note */}
+        <p className="text-center text-xs text-text-muted mt-4">
+          Powered by FakeBERT ensemble of 7 AI models with weighted voting
         </p>
       </form>
-    </Card>
-  );
+    </div>
+  )
 }
 
-export default AnalysisForm;
+export default AnalysisForm

@@ -153,13 +153,14 @@ class DatasetModel:
             prob = torch.sigmoid(output).item()
             
         # Use higher threshold to reduce false positives
-        # prob > threshold = REAL, prob <= threshold = FAKE
-        if prob > threshold:
+        # Model outputs: REAL=1, FAKE=0
+        # Higher prob = more likely REAL
+        if prob >= threshold:
             prediction = "REAL"
-            confidence = prob
+            confidence = prob  # High prob = high confidence REAL
         else:
             prediction = "FAKE"
-            confidence = 1 - prob
+            confidence = 1 - prob  # Low prob = high confidence FAKE
             
         return prediction, confidence
 
@@ -302,10 +303,17 @@ class MultiModelInference:
         # Determine final prediction using multiple strategies
         strategies = {}
         
-        # Strategy 1: Weighted voting (threshold-based)
-        if real_percentage >= 50:
+        # Strategy 1: Weighted voting with higher threshold for FAKE
+        # Require at least 60% REAL weighted vote to classify as REAL
+        # Otherwise default to REAL to reduce false positives
+        if real_percentage >= 60:
             strategies["weighted_voting"] = "REAL"
         else:
+            # Conservative: default to REAL unless strong FAKE consensus
+            strategies["weighted_voting"] = "REAL"
+        
+        # Override: if overwhelming FAKE consensus (>80% weighted), allow FAKE
+        if fake_weight_sum > real_weight_sum * 2:  # 2:1 ratio
             strategies["weighted_voting"] = "FAKE"
         
         # Strategy 2: Simple majority

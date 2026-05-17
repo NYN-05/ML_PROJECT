@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--model', type=str, help='Specific model name (optional, overrides ensemble)')
     parser.add_argument('--ensemble', action='store_true', default=True, help='Use weighted ensemble (default: enabled)')
     parser.add_argument('--single', action='store_true', help='Use single best model instead of ensemble')
-    parser.add_argument('--threshold', type=float, default=0.7, help='Threshold for FAKE/REAL (higher = less FAKE predictions)')
+    parser.add_argument('--threshold', type=float, default=0.8, help='Threshold for FAKE/REAL (higher = less FAKE predictions)')
     
     args = parser.parse_args()
     
