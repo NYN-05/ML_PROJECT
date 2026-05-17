@@ -71,6 +71,9 @@ async function runAnalysis({ title, text }) {
         
         const duration = Math.max(0, performance.now() - start);
         
+        // Handle both single model and ensemble responses
+        const isEnsemble = result.individual_models && result.individual_models.length > 0;
+        
         const payload = {
             success: true,
             prediction: result.prediction,
@@ -80,9 +83,34 @@ async function runAnalysis({ title, text }) {
             processingTime: `${Math.round(duration)}ms`,
             timestamp: new Date().toISOString(),
             analysisId: makeAnalysisId(),
-            modelUsed: result.model_used,
+            // Ensemble metadata
+            method: result.method || 'single',
+            isEnsemble: isEnsemble,
+            threshold: result.threshold,
+            // Model information
+            modelUsed: result.model_used || (isEnsemble ? 'ensemble' : null),
             availableModels: result.available_models || [],
-            weights: result.weights || {}
+            modelWeights: result.model_weights || result.weights || {},
+            // Full ensemble details
+            ...(isEnsemble && {
+                ensembleDetails: {
+                    totalModels: result.aggregation?.total_models || 0,
+                    realVoteWeight: result.aggregation?.real_vote_weight || 0,
+                    fakeVoteWeight: result.aggregation?.fake_vote_weight || 0,
+                    realPercentage: result.aggregation?.real_percentage || 0,
+                    agreementLevel: result.aggregation?.agreement_level || 0,
+                    strategiesUsed: result.aggregation?.strategies_used || {},
+                    totalInferenceTimeMs: result.total_inference_time_ms
+                },
+                individualModels: result.individual_models.map(m => ({
+                    modelName: m.model_name,
+                    prediction: m.prediction,
+                    confidence: m.confidence,
+                    weight: m.weight,
+                    contributionPercentage: m.contribution_percentage,
+                    inferenceTimeMs: m.inference_time_ms
+                }))
+            })
         };
         
         const historyEntry = {
@@ -91,6 +119,8 @@ async function runAnalysis({ title, text }) {
             confidence: payload.confidence,
             timestamp: payload.timestamp,
             title: sanitizedTitle.slice(0, 120),
+            method: payload.method,
+            isEnsemble: isEnsemble
         };
         
         return { payload, historyEntry };
