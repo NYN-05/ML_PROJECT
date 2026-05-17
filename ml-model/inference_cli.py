@@ -1,37 +1,46 @@
-"""CLI for inference - can be called from Node.js."""
+"""CLI for inference - DistilBERT-based fake news detection."""
 
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from inference import predict, predict_ensemble, get_inference
+from distilbert_inference import predict as distilbert_predict, get_distilbert_inference
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Fake News Detection CLI')
+    parser = argparse.ArgumentParser(description='Fake News Detection CLI (DistilBERT)')
     parser.add_argument('--text', type=str, required=True, help='Text to analyze')
-    parser.add_argument('--model', type=str, help='Specific model name (optional, overrides ensemble)')
-    parser.add_argument('--ensemble', action='store_true', default=True, help='Use weighted ensemble (default: enabled)')
-    parser.add_argument('--single', action='store_true', help='Use single best model instead of ensemble')
-    parser.add_argument('--threshold', type=float, default=0.8, help='Threshold for FAKE/REAL (higher = less FAKE predictions)')
+    parser.add_argument('--threshold', type=float, default=0.5, help='Threshold for FAKE/REAL')
     
     args = parser.parse_args()
     
-    # Load models if not already loaded
-    inference = get_inference()
-    
     try:
-        if args.single or args.model:
-            # Single model mode
-            result = predict(args.text, args.model, threshold=args.threshold)
-        else:
-            # Default: ensemble mode with all models
-            result = predict_ensemble(args.text, threshold=args.threshold)
-            
+        inf = get_distilbert_inference()
+        
+        if inf.bert is None:
+            print(json.dumps({'error': 'DistilBERT model not found. Train with train_fakebert.py first.'}))
+            sys.exit(1)
+        
+        start = time.time()
+        result_dict = distilbert_predict(args.text, args.threshold)
+        prediction = result_dict["prediction"]
+        confidence = result_dict["confidence"]
+        elapsed = (time.time() - start) * 1000
+        
+        result = {
+            'prediction': prediction,
+            'confidence': round(confidence, 4),
+            'method': 'distilbert',
+            'threshold': args.threshold,
+            'inference_time_ms': round(elapsed, 2),
+            'model_info': inf.get_info()
+        }
+        
         print(json.dumps(result))
         
     except Exception as e:
