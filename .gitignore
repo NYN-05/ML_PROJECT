@@ -1,0 +1,273 @@
+# =============================================================================
+# PRODUCTION-READY .GITIGNORE FOR ML/NLP PROJECTS
+# =============================================================================
+# This .gitignore follows best practices for:
+# - Python projects
+# - Machine Learning pipelines
+# - NLP/Text Processing projects
+# - Experiment-heavy repositories
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PYTHON CACHE & BYTECODE
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+*.egg-info/
+*.egg
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# -----------------------------------------------------------------------------
+# VIRTUAL ENVIRONMENTS
+# -----------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# -----------------------------------------------------------------------------
+# JUPYTER NOTEBOOKS
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.dask/
+ipynb_metadata.json
+
+# -----------------------------------------------------------------------------
+# IDE & EDITOR SETTINGS
+# -----------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Eclipse
+.settings/
+.project
+.classpath
+.worksheet
+
+# PyCharm
+.idea/**/workspace.xml
+.idea/**/dictionaries
+.idea/dictionaries.xml
+*.iml
+
+# VS Code
+.vscode/settings.json
+.vscode/tasks.json
+
+# -----------------------------------------------------------------------------
+# ML/DL FRAMEWORK CACHES
+# -----------------------------------------------------------------------------
+# PyTorch
+*.pth
+*.pt
+torch_cache/
+*.ckpt
+checkpoints/
+
+# TensorFlow
+*.pb
+*.h5
+*.ckpt
+logs/
+tensorboard/
+.mypy_cache/
+
+# Hugging Face
+.cache/
+huggingface/
+*.bin (large model files)
+
+# Weights & Biases
+wandb/
+
+# MLflow
+mlruns/
+mlartifacts/
+*.mlflow
+
+# DVC (Data Version Control)
+.dvc/
+.dvcignore
+
+# -----------------------------------------------------------------------------
+# TRAINING OUTPUTS & ARTIFACTS
+# -----------------------------------------------------------------------------
+outputs/
+logs/
+*.log
+*.out
+
+# Model artifacts
+models/*.pt
+models/*.pth
+models/*.h5
+models/*.pb
+models/*.joblib
+models/*.pkl
+models/*.pkl.gz
+
+# Vectorizers/Tokenizers
+tokenizer.json
+vectorizer.joblib
+tfidf_vectorizer.pkl
+
+# Preprocessing artifacts
+*.vocab
+*.dict
+
+# -----------------------------------------------------------------------------
+# EXPERIMENT TRACKING
+# -----------------------------------------------------------------------------
+experiments/
+runs/
+*.csv (generated results)
+*.json (generated metadata - keep config files)
+plots/
+figures/
+*.png (generated plots)
+*.pdf (generated reports)
+
+# -----------------------------------------------------------------------------
+# TEMPORARY FILES
+# -----------------------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+.cache/
+tmp/
+temp/
+*.cache
+
+# -----------------------------------------------------------------------------
+# LARGE BINARY FILES
+# -----------------------------------------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+
+# Dataset cache
+dataset_cache/
+*.feather
+*.parquet (if large)
+
+# -----------------------------------------------------------------------------
+# NODE/JAVASCRIPT
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnp
+.pnp.js
+
+# -----------------------------------------------------------------------------
+# ENVIRONMENT & SECRETS
+# -----------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.env
+secrets.yaml
+credentials.json
+*.pem
+*.key
+
+# -----------------------------------------------------------------------------
+# DOCS BUILDS (if generated)
+# -----------------------------------------------------------------------------
+site/
+_build/
+docs/_build/
+
+# -----------------------------------------------------------------------------
+# KAGGLE (if used)
+# -----------------------------------------------------------------------------
+kaggle.json
+
+# -----------------------------------------------------------------------------
+# GOOGLE COLAB (if used)
+# -----------------------------------------------------------------------------
+*.pth (from colab)
+
+# -----------------------------------------------------------------------------
+# VARIOUS
+# -----------------------------------------------------------------------------
+*.so
+*.dylib
+*.dll
+*.exe
+*.app
+*.appbundle
+
+# -----------------------------------------------------------------------------
+# INCLUDE ONLY SPECIFIC FILES (Negative patterns - keep these)
+# -----------------------------------------------------------------------------
+!README.md
+!requirements.txt
+!LICENSE
+!setup.py
+!setup.cfg
+!pyproject.toml
+
+# Keep example config files
+!config.example.py
+!*.example.yaml
+!*.example.json
+
+# Keep specific model files that are small or essential
+# !models/small_model.pt
+# !models/tokenizer.json
+
+# -----------------------------------------------------------------------------
+# Dataset - exclude large processed files
+dataset/processed/
+dataset/WELFake_Dataset/WELFake_Dataset.csv
+dataset/Fake News Detection_1/fake.csv
+dataset/Fake News Detection_1/true.csv
+dataset/ISOT Fake News Dataset/*.csv
+dataset/fake-and-real-news-dataset/*.csv
+
+# NOTE: The following are NOT ignored (explicitly tracked):
+# -----------------------------------------------------------------------------
+# - src/               : Source code
+# - ml-model/          : Original training code
+# - frontend/          : React frontend code
+# - backend/           : Backend server code
+# - Docs/              : Documentation
+# - dataset/           : Raw datasets (small - under 50MB)
+# - README.md          : Project readme
+# - requirements.txt   : Dependencies
+# =============================================================================
