@@ -1,1 +1,72 @@
-[]
+[
+  {
+    "analysisId": "ANL_1779044991723_97847",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:09:51.723Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044833025_44656",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:07:13.025Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044814826_84095",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:54.826Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044814634_41477",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:54.634Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044814435_26602",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:54.435Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044814225_26138",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:54.225Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044814010_42610",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:54.010Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044813721_95189",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:53.721Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044813351_43754",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:06:53.351Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  },
+  {
+    "analysisId": "ANL_1779044739452_33522",
+    "prediction": "ERROR",
+    "confidence": 0,
+    "timestamp": "2026-05-17T19:05:39.452Z",
+    "title": "No cash, one nuclear site, 400 kg Uranium: Trump’s Iran truce terms"
+  }
+]

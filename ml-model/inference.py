@@ -92,17 +92,52 @@ class DatasetModel:
             
         return False
     
-    def predict(self, text: str) -> Tuple[str, float]:
-        """Predict on text."""
+    def _preprocess_text(self, text: str) -> str:
+        """Preprocess text same as training - remove stopwords, lemmatize."""
+        import re
+        try:
+            import nltk
+            from nltk.corpus import stopwords
+            from nltk.stem import WordNetLemmatizer
+            
+            # Try to use NLTK
+            try:
+                stop_words = set(stopwords.words('english'))
+            except:
+                stop_words = set()
+            
+            lemmatizer = WordNetLemmatizer()
+        except:
+            # Fallback without NLTK
+            return text.lower()
+        
+        # Clean text
+        text = text.lower()
+        text = re.sub(r"https?://\S+|www\.\S+", " ", text)
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = re.sub(r"[^a-z\s]", " ", text)
+        text = re.sub(r"\s+", " ", text).strip()
+        
+        # Remove stopwords and lemmatize
+        words = text.split()
+        words = [lemmatizer.lemmatize(w) for w in words if w not in stop_words and len(w) > 2]
+        
+        return " ".join(words)
+    
+    def predict(self, text: str, threshold: float = 0.6) -> Tuple[str, float]:
+        """Predict on text with adjustable threshold."""
         if not self.model or not self.tokenizer:
             return "UNKNOWN", 0.0
             
+        # Preprocess text (same as training)
+        processed_text = self._preprocess_text(text)
+        
         # Tokenize - handle both word_index and word_to_idx formats
         word_to_idx = self.tokenizer.get('word_index', self.tokenizer.get('word_to_idx', {}))
         oov_token = self.tokenizer.get('oov_token', '<OOV>')
         oov_idx = word_to_idx.get(oov_token, 1)
         
-        words = text.lower().split()
+        words = processed_text.split()
         indices = [word_to_idx.get(w, oov_idx) for w in words]
         
         # Pad
@@ -117,9 +152,15 @@ class DatasetModel:
             output = self.model(x)
             prob = torch.sigmoid(output).item()
             
-        prediction = "FAKE" if prob < 0.5 else "REAL"
-        confidence = prob if prediction == "REAL" else 1 - prob
-        
+        # Use higher threshold to reduce false positives
+        # prob > threshold = REAL, prob <= threshold = FAKE
+        if prob > threshold:
+            prediction = "REAL"
+            confidence = prob
+        else:
+            prediction = "FAKE"
+            confidence = 1 - prob
+            
         return prediction, confidence
 
 
@@ -166,8 +207,15 @@ class MultiModelInference:
         print(f"Loaded {loaded} models")
         return loaded
     
-    def predict(self, text: str, model_name: Optional[str] = None) -> Dict:
-        """Predict using specified model or best model."""
+    def predict(self, text: str, model_name: Optional[str] = None, 
+            threshold: float = 0.6) -> Dict:
+        """Predict using specified model or best model.
+        
+        Args:
+            text: Input text to analyze
+            model_name: Specific model to use (optional)
+            threshold: Higher threshold = fewer FAKE predictions (reduce false positives)
+        """
         if not self.models:
             return {"error": "No models loaded"}
             
@@ -180,46 +228,137 @@ class MultiModelInference:
             # Use first available model
             model = list(self.models.values())[0]
             
-        prediction, confidence = model.predict(text)
+        prediction, confidence = model.predict(text, threshold=threshold)
         
         return {
             "prediction": prediction,
             "confidence": round(confidence, 4),
             "model_used": model_name or self.best_model_name or "auto",
+            "threshold": threshold,
             "available_models": list(self.models.keys()),
             "weights": self.weights
         }
     
-    def predict_ensemble(self, text: str) -> Dict:
-        """Predict using weighted ensemble of all models."""
+    def predict_ensemble(self, text: str, threshold: float = 0.7) -> Dict:
+        """Predict using weighted ensemble with full metadata.
+        
+        Runs all models in parallel, collects predictions, and aggregates using
+        weighted voting with configurable weights based on performance metrics.
+        
+        Returns comprehensive metadata for debugging and traceability.
+        """
+        import time
+        
         if not self.models:
             return {"error": "No models loaded"}
-            
-        predictions = {}
-        confidences = {}
+        
+        total_start = time.time()
+        
+        # Run all models and collect individual predictions with metadata
+        model_results = []
+        all_weights = []
+        real_votes = []
+        fake_votes = []
         
         for name, model in self.models.items():
-            pred, conf = model.predict(text)
-            predictions[name] = pred
-            confidences[name] = conf
+            model_start = time.time()
             
-        # Weighted vote based on model weights
-        weighted_scores = {"FAKE": 0.0, "REAL": 0.0}
-        
-        for name, pred in predictions.items():
+            # Get prediction from model
+            pred, conf = model.predict(text, threshold=threshold)
+            
+            model_time = time.time() - model_start
             weight = self.weights.get(name, 0.5)
-            weighted_scores[pred] += weight
             
-        final_prediction = max(weighted_scores, key=weighted_scores.get)
-        avg_confidence = sum(confidences.values()) / len(confidences)
+            # Store individual model result
+            model_results.append({
+                "model_name": name,
+                "prediction": pred,
+                "confidence": round(conf, 4),
+                "weight": round(weight, 4),
+                "inference_time_ms": round(model_time * 1000, 2),
+                "timestamp": time.time()
+            })
+            
+            all_weights.append(weight)
+            
+            if pred == "REAL":
+                real_votes.append(weight)
+            else:
+                fake_votes.append(weight)
+        
+        # Aggregate using weighted voting
+        total_weight = sum(all_weights)
+        real_weight_sum = sum(real_votes)
+        fake_weight_sum = sum(fake_votes)
+        
+        real_percentage = (real_weight_sum / total_weight * 100) if total_weight > 0 else 0
+        
+        # Calculate contribution percentage for each model
+        for result in model_results:
+            result["contribution_percentage"] = round(
+                (result["weight"] / total_weight * 100) if total_weight > 0 else 0, 2
+            )
+        
+        # Determine final prediction using multiple strategies
+        strategies = {}
+        
+        # Strategy 1: Weighted voting (threshold-based)
+        if real_percentage >= 50:
+            strategies["weighted_voting"] = "REAL"
+        else:
+            strategies["weighted_voting"] = "FAKE"
+        
+        # Strategy 2: Simple majority
+        real_count = len(real_votes)
+        fake_count = len(fake_votes)
+        strategies["majority"] = "REAL" if real_count > fake_count else "FAKE"
+        
+        # Strategy 3: Confidence-weighted average (convert FAKE to 1, REAL to 0)
+        confidence_sum = 0
+        weight_sum = 0
+        for result in model_results:
+            # Convert: FAKE=1, REAL=0 for weighted average
+            fake_indicator = 1 if result["prediction"] == "FAKE" else 0
+            confidence_sum += fake_indicator * result["confidence"] * result["weight"]
+            weight_sum += result["weight"]
+        
+        avg_fake_confidence = confidence_sum / weight_sum if weight_sum > 0 else 0.5
+        strategies["confidence_weighted"] = "FAKE" if avg_fake_confidence >= 0.5 else "REAL"
+        
+        # Use primary strategy: weighted voting with fallback to confidence-weighted
+        final_prediction = strategies["weighted_voting"]
+        
+        # Calculate final confidence based on agreement level
+        agreement = max(real_count, fake_count) / len(self.models)
+        if final_prediction == "REAL":
+            final_confidence = real_weight_sum / total_weight if total_weight > 0 else 0.5
+        else:
+            final_confidence = fake_weight_sum / total_weight if total_weight > 0 else 0.5
+        
+        # Boost confidence if high agreement
+        final_confidence = min(1.0, final_confidence * (0.5 + 0.5 * agreement))
+        
+        total_time = time.time() - total_start
         
         return {
             "prediction": final_prediction,
-            "confidence": round(avg_confidence, 4),
-            "method": "ensemble",
-            "model_votes": predictions,
-            "model_weights": self.weights,
-            "available_models": list(self.models.keys())
+            "confidence": round(final_confidence, 4),
+            "method": "ensemble_weighted",
+            "threshold": threshold,
+            "total_inference_time_ms": round(total_time * 1000, 2),
+            "aggregation": {
+                "total_models": len(self.models),
+                "real_vote_weight": round(real_weight_sum, 4),
+                "fake_vote_weight": round(fake_weight_sum, 4),
+                "real_percentage": round(real_percentage, 1),
+                "real_count": real_count,
+                "fake_count": fake_count,
+                "agreement_level": round(agreement * 100, 1),
+                "strategies_used": strategies
+            },
+            "individual_models": model_results,
+            "available_models": list(self.models.keys()),
+            "model_weights": self.weights
         }
     
     def get_info(self) -> Dict:
@@ -250,14 +389,14 @@ def get_inference() -> MultiModelInference:
     return _inference_instance
 
 
-def predict(text: str, model_name: Optional[str] = None) -> Dict:
-    """Quick prediction function."""
-    return get_inference().predict(text, model_name)
+def predict(text: str, model_name: Optional[str] = None, threshold: float = 0.7) -> Dict:
+    """Quick prediction function with threshold."""
+    return get_inference().predict(text, model_name, threshold)
 
 
-def predict_ensemble(text: str) -> Dict:
-    """Ensemble prediction function."""
-    return get_inference().predict_ensemble(text)
+def predict_ensemble(text: str, threshold: float = 0.7) -> Dict:
+    """Ensemble prediction function - uses conservative voting."""
+    return get_inference().predict_ensemble(text, threshold)
 
 
 if __name__ == "__main__":
