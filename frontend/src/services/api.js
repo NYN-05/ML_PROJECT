@@ -1,26 +1,70 @@
-import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1",
-  timeout: 5000,
-});
+class ApiService {
+  constructor() {
+    this.baseUrl = API_BASE_URL;
+  }
 
-export const analyzeNews = async (payload) => {
-  const { data } = await api.post("/analyze", payload);
-  return data;
-};
+  async request(endpoint, options = {}) {
+    const url = `${this.baseUrl}${endpoint}`;
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    };
 
-export const fetchHistory = async () => {
-  const { data } = await api.get("/history");
-  return data;
-};
+    if (config.body && typeof config.body === 'object') {
+      config.body = JSON.stringify(config.body);
+    }
 
-export const fetchSettings = async () => {
-  const { data } = await api.get("/settings");
-  return data;
-};
+    try {
+      const response = await fetch(url, config);
 
-export const updateSettings = async (payload) => {
-  const { data } = await api.patch("/settings", payload);
-  return data;
-};
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `HTTP error ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error [${endpoint}]:`, error);
+      throw error;
+    }
+  }
+
+  async analyze(text, title = '') {
+    return this.request('/analyze', {
+      method: 'POST',
+      body: { text, title },
+    });
+  }
+
+  async getHistory() {
+    return this.request('/history', { method: 'GET' });
+  }
+
+  async getSettings() {
+    return this.request('/settings', { method: 'GET' });
+  }
+
+  async updateSettings(settings) {
+    return this.request('/settings', {
+      method: 'PUT',
+      body: settings,
+    });
+  }
+
+  async healthCheck() {
+    try {
+      const response = await fetch(`${this.baseUrl}/health`);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+}
+
+export const apiService = new ApiService();
+export default apiService;
