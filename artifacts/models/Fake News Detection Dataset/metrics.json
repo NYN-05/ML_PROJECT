@@ -1,0 +1,11 @@
+{
+  "dataset_name": "Fake News Detection Dataset",
+  "accuracy": 0.51025,
+  "precision": 0.5184275184275184,
+  "recall": 0.21216691804927099,
+  "f1_score": 0.3011059579022476,
+  "dataset_size": 20000,
+  "train_samples": 16000,
+  "test_samples": 4000,
+  "training_time": 33.58569598197937
+}

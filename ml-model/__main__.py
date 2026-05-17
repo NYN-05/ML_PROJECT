@@ -1,6 +1,6 @@
-"""Module entrypoint for training."""
+"""Module entrypoint for multi-dataset training."""
 
-from train import main
+from train_all import main
 
 
 if __name__ == "__main__":
