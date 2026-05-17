@@ -1,21 +1,27 @@
-import { forwardRef } from 'react';
+import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import styles from './Input.module.css';
 
-export const Input = forwardRef(function Input(
-  {
-    label,
-    error,
-    icon,
-    fullWidth = true,
-    className = '',
-    ...props
-  },
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+  icon?: React.ReactNode;
+  fullWidth?: boolean;
+}
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+  fullWidth?: boolean;
+}
+
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { label, error, icon, fullWidth = true, className = '', ...props },
   ref
 ) {
   const inputClasses = [
     styles.input,
-    icon && styles.hasIcon,
-    error && styles.hasError,
+    icon ? styles.hasIcon : '',
+    error ? styles.hasError : '',
     className,
   ]
     .filter(Boolean)
@@ -33,13 +39,13 @@ export const Input = forwardRef(function Input(
   );
 });
 
-export const Textarea = forwardRef(function Textarea(
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
   { label, error, fullWidth = true, className = '', rows = 5, ...props },
   ref
 ) {
   const textareaClasses = [
     styles.textarea,
-    error && styles.hasError,
+    error ? styles.hasError : '',
     className,
   ]
     .filter(Boolean)

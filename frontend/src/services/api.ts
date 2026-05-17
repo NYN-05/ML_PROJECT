@@ -1,23 +1,21 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 class ApiService {
+  baseUrl: string;
+
   constructor() {
     this.baseUrl = API_BASE_URL;
   }
 
-  async request(endpoint, options = {}) {
+  async request(endpoint: string, options: RequestInit = {}) {
     const url = `${this.baseUrl}${endpoint}`;
-    const config = {
+    const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
       ...options,
     };
-
-    if (config.body && typeof config.body === 'object') {
-      config.body = JSON.stringify(config.body);
-    }
 
     try {
       const response = await fetch(url, config);
@@ -34,10 +32,10 @@ class ApiService {
     }
   }
 
-  async analyze(text, title = '') {
+  async analyze(text: string, title = '') {
     return this.request('/analyze', {
       method: 'POST',
-      body: { text, title },
+      body: JSON.stringify({ text, title }),
     });
   }
 
@@ -49,10 +47,10 @@ class ApiService {
     return this.request('/settings', { method: 'GET' });
   }
 
-  async updateSettings(settings) {
+  async updateSettings(settings: unknown) {
     return this.request('/settings', {
       method: 'PUT',
-      body: settings,
+      body: JSON.stringify(settings),
     });
   }
 

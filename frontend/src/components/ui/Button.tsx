@@ -1,4 +1,14 @@
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.css';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'small' | 'medium' | 'large';
+  isLoading?: boolean;
+  fullWidth?: boolean;
+  icon?: ReactNode;
+}
 
 export function Button({
   children,
@@ -12,13 +22,13 @@ export function Button({
   type = 'button',
   className = '',
   ...props
-}) {
+}: ButtonProps) {
   const classNames = [
     styles.button,
     styles[variant],
     styles[size],
-    fullWidth && styles.fullWidth,
-    isLoading && styles.loading,
+    fullWidth ? styles.fullWidth : '',
+    isLoading ? styles.loading : '',
     className,
   ]
     .filter(Boolean)
