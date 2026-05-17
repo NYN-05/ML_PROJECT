@@ -1,0 +1,163 @@
+{
+  "training_date": "2026-05-18T00:03:34.741554",
+  "total_datasets": 7,
+  "models": [
+    {
+      "dataset_name": "Fake News Detection Dataset",
+      "accuracy": 0.51025,
+      "precision": 0.5184275184275184,
+      "recall": 0.21216691804927099,
+      "f1_score": 0.3011059579022476,
+      "dataset_size": 20000,
+      "train_samples": 16000,
+      "test_samples": 4000,
+      "training_time": 33.58569598197937
+    },
+    {
+      "dataset_name": "Fake News Detection_1",
+      "accuracy": 0.9940966807752283,
+      "precision": 0.9936974789915967,
+      "recall": 0.9939294886761616,
+      "f1_score": 0.9938134702929847,
+      "dataset_size": 44889,
+      "train_samples": 35911,
+      "test_samples": 8978,
+      "training_time": 100.35259914398193
+    },
+    {
+      "dataset_name": "Fake or Real News",
+      "accuracy": 0.8816101026045777,
+      "precision": 0.935251798561151,
+      "recall": 0.8201892744479495,
+      "f1_score": 0.8739495798319328,
+      "dataset_size": 6334,
+      "train_samples": 5067,
+      "test_samples": 1267,
+      "training_time": 20.187507390975952
+    },
+    {
+      "dataset_name": "fake-and-real-news-dataset",
+      "accuracy": 0.9939852973936288,
+      "precision": 0.9936960074713985,
+      "recall": 0.9936960074713985,
+      "f1_score": 0.9936960074713985,
+      "dataset_size": 44889,
+      "train_samples": 35911,
+      "test_samples": 8978,
+      "training_time": 125.1030604839325
+    },
+    {
+      "dataset_name": "ISOT Fake News Dataset",
+      "accuracy": 0.99376253063043,
+      "precision": 0.9932322053675613,
+      "recall": 0.9936960074713985,
+      "f1_score": 0.9934640522875817,
+      "dataset_size": 44889,
+      "train_samples": 35911,
+      "test_samples": 8978,
+      "training_time": 143.92829251289368
+    },
+    {
+      "dataset_name": "News Detection (Fake or Real) Dataset",
+      "accuracy": 0.9949494949494949,
+      "precision": 0.997946611909651,
+      "recall": 0.9918367346938776,
+      "f1_score": 0.9948822927328557,
+      "dataset_size": 9900,
+      "train_samples": 7920,
+      "test_samples": 1980,
+      "training_time": 44.89707899093628
+    },
+    {
+      "dataset_name": "WELFake_Dataset",
+      "accuracy": 0.9649451617381647,
+      "precision": 0.9649359406608227,
+      "recall": 0.9668918918918918,
+      "f1_score": 0.9659129260884239,
+      "dataset_size": 72026,
+      "train_samples": 57620,
+      "test_samples": 14406,
+      "training_time": 255.16063451766968
+    }
+  ],
+  "weights": [
+    {
+      "dataset_name": "Fake News Detection Dataset",
+      "weights": {
+        "accuracy": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "dataset_size": 0.208
+      },
+      "final_weight": 0.0416
+    },
+    {
+      "dataset_name": "Fake News Detection_1",
+      "weights": {
+        "accuracy": 0.9982,
+        "precision": 0.9911,
+        "recall": 1.0,
+        "f1_score": 0.9985,
+        "dataset_size": 0.5869
+      },
+      "final_weight": 0.9149
+    },
+    {
+      "dataset_name": "Fake or Real News",
+      "weights": {
+        "accuracy": 0.7662,
+        "precision": 0.8693,
+        "recall": 0.7778,
+        "f1_score": 0.8257,
+        "dataset_size": 0.0
+      },
+      "final_weight": 0.6478
+    },
+    {
+      "dataset_name": "fake-and-real-news-dataset",
+      "weights": {
+        "accuracy": 0.998,
+        "precision": 0.9911,
+        "recall": 0.9997,
+        "f1_score": 0.9983,
+        "dataset_size": 0.5869
+      },
+      "final_weight": 0.9148
+    },
+    {
+      "dataset_name": "ISOT Fake News Dataset",
+      "weights": {
+        "accuracy": 0.9976,
+        "precision": 0.9902,
+        "recall": 0.9997,
+        "f1_score": 0.998,
+        "dataset_size": 0.5869
+      },
+      "final_weight": 0.9145
+    },
+    {
+      "dataset_name": "News Detection (Fake or Real) Dataset",
+      "weights": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 0.9973,
+        "f1_score": 1.0,
+        "dataset_size": 0.0543
+      },
+      "final_weight": 0.8103
+    },
+    {
+      "dataset_name": "WELFake_Dataset",
+      "weights": {
+        "accuracy": 0.9381,
+        "precision": 0.9312,
+        "recall": 0.9654,
+        "f1_score": 0.9582,
+        "dataset_size": 1.0
+      },
+      "final_weight": 0.9586
+    }
+  ],
+  "best_model": "WELFake_Dataset"
+}

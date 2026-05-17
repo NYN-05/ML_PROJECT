@@ -1,0 +1,11 @@
+{
+  "dataset_name": "WELFake_Dataset",
+  "accuracy": 0.9649451617381647,
+  "precision": 0.9649359406608227,
+  "recall": 0.9668918918918918,
+  "f1_score": 0.9659129260884239,
+  "dataset_size": 72026,
+  "train_samples": 57620,
+  "test_samples": 14406,
+  "training_time": 255.16063451766968
+}

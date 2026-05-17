@@ -1,0 +1,11 @@
+{
+  "dataset_name": "Fake or Real News",
+  "accuracy": 0.8816101026045777,
+  "precision": 0.935251798561151,
+  "recall": 0.8201892744479495,
+  "f1_score": 0.8739495798319328,
+  "dataset_size": 6334,
+  "train_samples": 5067,
+  "test_samples": 1267,
+  "training_time": 20.187507390975952
+}
