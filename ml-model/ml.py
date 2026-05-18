@@ -102,9 +102,6 @@ class ImprovedClassifier(nn.Module):
             nn.Linear(config.intermediate_dim, config.num_labels)
         )
         
-        # Label smoothing loss
-        self.label_smoothing = config.label_smoothing
-    
     def forward(self, input_ids, attention_mask, labels=None):
         # Transformer output
         outputs = self.transformer(input_ids=input_ids, attention_mask=attention_mask)
@@ -124,8 +121,8 @@ class ImprovedClassifier(nn.Module):
         # Classifier
         logits = self.classifier(pooled)
         
-        # Return logits for training
-        return logits
+        # Return dict with loss and logits (Trainer handles this)
+        return {"logits": logits, "loss": None}
     
     def predict(self, input_ids, attention_mask):
         """Inference method."""
@@ -330,8 +327,7 @@ class MLTrainer:
             metric_for_best_model="eval_f1",
             greater_is_better=True,
             save_total_limit=2,
-            logging_dir=str(self.output_dir / "logs"),
-            report_to="tensorboard"
+            report_to="none"
         )
         
         # Create trainer
